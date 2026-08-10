@@ -1215,10 +1215,10 @@ with st.sidebar:
 
     st.markdown(
         f"<div style='margin-top: auto; padding-top: 15px;'>"
-        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 6px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; font-style: italic !important; line-height: 1.35; background: rgba(0,0,0,0.02); padding: 4px 2px; border-radius: 5px; border: 1px solid rgba(128,128,128,0.12);'>"
-        f"<span style='color: {css_text_secondary}; font-size: 5.5px !important; font-style: italic;'>พัฒนาโดย</span><br>"
-        f"<span style='color: {css_text_primary}; font-size: 6.5px !important; font-weight: 600; font-style: italic; white-space: nowrap !important;'>ทนพ.ปองพล ฤกษ์เนาวรัตน์</span><br>"
-        f"<span style='color: {css_text_secondary}; font-size: 5.5px !important; font-style: italic;'>นักเทคนิคการแพทย์ ชำนาญการ</span>"
+        f"<div style='text-align: center; color: {css_text_secondary}; font-family: \"TH Sarabun New\", \"TH SarabunPSK\", \"Sarabun\", sans-serif !important; font-style: italic !important; line-height: 1.25; background: rgba(0,0,0,0.02); padding: 4px 2px; border-radius: 5px; border: 1px solid rgba(128,128,128,0.12);'>"
+        f"<span style='color: {css_text_secondary}; font-size: 10.5px !important; font-style: italic; font-family: \"TH Sarabun New\", \"TH SarabunPSK\", \"Sarabun\", sans-serif !important;'>พัฒนาโดย</span><br>"
+        f"<span style='color: {css_text_primary}; font-size: 12.5px !important; font-weight: 600; font-style: italic; white-space: nowrap !important; font-family: \"TH Sarabun New\", \"TH SarabunPSK\", \"Sarabun\", sans-serif !important;'>ทนพ.ปองพล ฤกษ์เนาวรัตน์</span><br>"
+        f"<span style='color: {css_text_secondary}; font-size: 10.5px !important; font-style: italic; font-family: \"TH Sarabun New\", \"TH SarabunPSK\", \"Sarabun\", sans-serif !important;'>นักเทคนิคการแพทย์ ชำนาญการ</span>"
         f"</div>"
         f"</div>",
         unsafe_allow_html=True
