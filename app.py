@@ -897,7 +897,8 @@ def sort_hospital_records(items, sort_option):
 
 def browse_directory():
     """
-    Opens a native Tkinter file dialog to browse local directories.
+    Opens a native Tkinter file dialog to browse local directories if running on local PC.
+    Returns empty string if running in headless cloud server mode.
     """
     try:
         import tkinter as tk
@@ -912,6 +913,28 @@ def browse_directory():
         return dir_path
     except Exception:
         return ""
+
+def create_workspace_zip():
+    """
+    Creates a ZIP archive buffer containing all organized hospital document folders
+    and Excel files from workspace_dir for direct browser download onto the user's computer.
+    """
+    workspace = st.session_state.get("workspace_dir", os.path.abspath(os.path.dirname(__file__)))
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        if os.path.exists(workspace):
+            for root, dirs, files in os.walk(workspace):
+                # Skip system folders and code files
+                if any(x in root for x in [".git", "__pycache__", ".streamlit", "scratch", ".system_generated"]):
+                    continue
+                for file in files:
+                    if file.endswith((".py", ".bat", ".vbs", ".csv", ".json", ".toml", ".gitignore")):
+                        continue
+                    file_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(file_path, workspace)
+                    zf.write(file_path, rel_path)
+    zip_buffer.seek(0)
+    return zip_buffer
 
 def log_usage(operator_name, action):
     """
@@ -1187,30 +1210,64 @@ with st.sidebar:
         api_key = st.text_input("Gemini API Key:", value=cfg.get("api_key", ""), type="password", help="ใช้ในการส่งเนื้อความอีเมลและ PDF ไปประมวลผลดึงโครงสร้าง JSON", key="cfg_apikey")
         
         # Stacked Folder Selector
-        workspace_dir_input = st.text_input("โฟลเดอร์เก็บข้อมูลโครงการ:", value=st.session_state.workspace_dir, key="cfg_wsdir")
-        if st.button("📂 คลิกเพื่อเลือกโฟลเดอร์บนเครื่อง...", use_container_width=True, key="btn_cfg_browse"):
-            selected_dir = browse_directory()
-            if selected_dir:
-                st.session_state.workspace_dir = selected_dir
-                st.rerun()
+        st.markdown("---")
+        st.markdown("#### 📁 กำหนดเส้นทางโฟลเดอร์สำหรับจัดเก็บเอกสาร:")
+        workspace_dir_input = st.text_input(
+            "ระบุเส้นทาง/โฟลเดอร์เก็บข้อมูลโครงการ:", 
+            value=st.session_state.workspace_dir, 
+            help="ระบุเส้นทางโฟลเดอร์ เช่น D:/งานส่วนกลาง/LA_Docs หรือ C:/LAMS_Data ระบบจะสร้างโฟลเดอร์ย่อยแยกตามรายชื่อโรงพยาบาลให้อัตโนมัติในเส้นทางนี้",
+            key="cfg_wsdir"
+        )
+        
+        col_fb1, col_fb2 = st.columns(2)
+        with col_fb1:
+            if st.button("📂 เบราว์ซ์เลือกโฟลเดอร์...", use_container_width=True, key="btn_cfg_browse"):
+                selected_dir = browse_directory()
+                if selected_dir:
+                    st.session_state.workspace_dir = selected_dir
+                    st.rerun()
+                else:
+                    st.toast("💡 พิมพ์หรือแก้ไขเส้นทางโฟลเดอร์ในช่องพิมพ์ด้านบนได้เลยครับ", icon="📁")
+        with col_fb2:
+            btn_save_ws = st.button("💾 บันทึกเส้นทางโฟลเดอร์", use_container_width=True, type="primary", key="btn_cfg_save_ws")
+
+        if btn_save_ws:
+            w_path = workspace_dir_input.strip()
+            if w_path:
+                try:
+                    os.makedirs(w_path, exist_ok=True)
+                    os.makedirs(os.path.join(w_path, "1. นำเข้าใหม่ยังไม่ได้เช็ค"), exist_ok=True)
+                    os.makedirs(os.path.join(w_path, "2. รพ ที่ verified แล้ว"), exist_ok=True)
+                    cfg["email"] = email.strip()
+                    cfg["password"] = password.strip()
+                    cfg["api_key"] = api_key.strip()
+                    cfg["workspace_dir"] = w_path
+                    cfg["excel_path"] = os.path.join(w_path, "ตารางตรวจ LA สิงหาคม 69.xlsx")
+                    cfg["download_attachments"] = True
                     
-        if st.button("💾 บันทึกการตั้งค่าลงเครื่อง", use_container_width=True, type="primary", key="btn_cfg_save"):
-            cfg["email"] = email.strip()
-            cfg["password"] = password.strip()
-            cfg["api_key"] = api_key.strip()
-            cfg["workspace_dir"] = workspace_dir_input.strip()
-            cfg["excel_path"] = os.path.join(cfg["workspace_dir"], "ตารางตรวจ LA สิงหาคม 69.xlsx")
-            cfg["download_attachments"] = True
-            
-            if save_config(cfg):
-                st.session_state.config = cfg
-                st.session_state.workspace_dir = workspace_dir_input.strip()
-                st.success("บันทึกการตั้งค่าสำเร็จ!")
-                log_usage(st.session_state.operator_name, "บันทึกการตั้งค่า config.json ใหม่")
-                time.sleep(0.5)
-                st.rerun()
-            else:
-                st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
+                    if save_config(cfg):
+                        st.session_state.config = cfg
+                        st.session_state.workspace_dir = w_path
+                        st.success(f"🎉 ตั้งค่าสำเร็จ! ระบบจะบันทึกแยกตามรายชื่อโรงพยาบาลใน: `{w_path}`")
+                        log_usage(st.session_state.operator_name, f"เปลี่ยนเส้นทางโฟลเดอร์โครงการเป็น {w_path}")
+                        time.sleep(0.6)
+                        st.rerun()
+                    else:
+                        st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
+                except Exception as err:
+                    st.error(f"ไม่สามารถสร้างโฟลเดอร์ตามเส้นทางที่ระบุได้: {err}")
+                
+        st.markdown("---")
+        # Direct ZIP download of all project files to local PC
+        zip_buffer_settings = create_workspace_zip()
+        st.download_button(
+            label="📦 ดาวน์โหลดเอกสารทั้งหมดลงเครื่อง (Zip)",
+            data=zip_buffer_settings,
+            file_name=f"LAMS_Documents_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.zip",
+            mime="application/zip",
+            use_container_width=True,
+            key="btn_dl_zip_settings"
+        )
                 
         st.markdown("---")
         if st.button("🚪 ออกจากระบบ (Logout)", use_container_width=True, key="btn_logout_inside"):
@@ -1434,8 +1491,22 @@ if st.session_state.active_menu == 1:
                 
         st.markdown("---")
         
-        # Quick Import Action
-        if st.button("📁 บันทึกไฟล์ ตามรายชื่อโรงพยาบาล", type="secondary", use_container_width=True):
+        # Quick Import Action & Direct Zip Download
+        col_act1, col_act2 = st.columns(2)
+        with col_act1:
+            btn_do_import = st.button("📁 บันทึกไฟล์ ตามรายชื่อโรงพยาบาล", type="primary", use_container_width=True)
+        with col_act2:
+            zip_buf_m1 = create_workspace_zip()
+            st.download_button(
+                label="📦 ดาวน์โหลดเอกสารทั้งหมดลงเครื่อง (Zip)",
+                data=zip_buf_m1,
+                file_name=f"LAMS_Documents_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.zip",
+                mime="application/zip",
+                use_container_width=True,
+                key="btn_dl_zip_menu1"
+            )
+            
+        if btn_do_import:
             queue = [e for e in st.session_state.fetched_emails if e['id'] in selected_ids]
             if not queue:
                 st.warning("กรุณาเลือกอีเมลอย่างน้อย 1 รายการก่อน!")
