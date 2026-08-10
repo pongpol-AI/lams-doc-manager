@@ -643,6 +643,14 @@ st.markdown(f"""
         min-height: 32px !important;
     }}
     
+    /* Prevent sidebar buttons from wrapping text into multiple ugly lines */
+    section[data-testid="stSidebar"] button,
+    section[data-testid="stSidebar"] button p {{
+        white-space: nowrap !important;
+        font-size: 12.5px !important;
+        line-height: 1.2 !important;
+    }}
+    
     /* Lock sidebar open, hide collapse control trigger */
     [data-testid="collapsedControl"],
     button[data-testid="collapsedControl"],
