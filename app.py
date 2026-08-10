@@ -360,25 +360,27 @@ st.markdown(f"""
     }}
     
     /* Form Inputs and Selectboxes - High Contrast Green & Purple Theme */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="input"] > div,
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] *,
+    div[data-baseweb="input"],
+    div[data-baseweb="input"] *,
     div[role="combobox"],
-    div[data-baseweb="select"] input,
+    div[role="combobox"] *,
     .stSelectbox div[data-baseweb="select"],
+    .stSelectbox div[data-baseweb="select"] *,
     div[data-testid="stTextInput"] input {{
         background-color: {css_widget_bg} !important;
         color: {css_text_primary} !important;
+        -webkit-text-fill-color: {css_text_primary} !important;
+        fill: {css_text_primary} !important;
+    }}
+    
+    div[data-baseweb="select"],
+    div[data-baseweb="input"] > div,
+    div[role="combobox"],
+    div[data-testid="stTextInput"] input {{
         border: 1px solid {css_widget_border} !important;
         border-radius: 8px !important;
-    }}
-
-    div[data-baseweb="select"] span,
-    div[data-baseweb="select"] div,
-    div[role="combobox"] span,
-    div[role="combobox"] div,
-    div[data-baseweb="select"] svg {{
-        color: {css_text_primary} !important;
-        fill: {css_text_primary} !important;
     }}
 
     /* Popover Dropdown Menu Items */
