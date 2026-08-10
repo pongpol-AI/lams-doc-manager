@@ -1189,11 +1189,11 @@ with st.sidebar:
         st.session_state.theme_mode = theme_choice
         st.rerun()
 
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
     st.markdown(
-        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 10px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; line-height: 1.5; white-space: nowrap !important; background: rgba(0,0,0,0.03); padding: 8px 4px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.15);'>"
+        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 7.5px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; line-height: 1.3; white-space: nowrap !important; background: rgba(0,0,0,0.03); padding: 4px 2px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.12);'>"
         f"<span style='color: {css_text_primary}; font-weight: 600;'>พัฒนาโดย</span> ทนพ.ปองพล ฤกษ์เนาวรัตน์<br>"
-        f"<span style='color: {css_text_secondary}; font-size: 9.5px !important;'>นักเทคนิคการแพทย์ชำนาญการ</span>"
+        f"<span style='color: {css_text_secondary}; font-size: 7px !important;'>นักเทคนิคการแพทย์ชำนาญการ</span>"
         f"</div>",
         unsafe_allow_html=True
     )
