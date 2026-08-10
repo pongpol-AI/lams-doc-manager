@@ -1216,19 +1216,17 @@ with st.sidebar:
             st.session_state.current_browse_path = st.session_state.workspace_dir
 
         st.markdown("---")
-        st.markdown("#### 📁 กำหนดเส้นทางโฟลเดอร์สำหรับจัดเก็บเอกสาร:")
+        st.markdown("#### 📁 โฟลเดอร์สำหรับจัดเก็บข้อมูลโครงการ:")
         
-        workspace_dir_input = st.text_input(
-            "โฟลเดอร์เก็บข้อมูลโครงการปัจจุบัน:", 
-            value=st.session_state.workspace_dir, 
-            help="สามารถเลือกผ่านปุ่มเบราว์ซ์ด้านล่าง หรือพิมพ์ระบุเส้นทางโฟลเดอร์ได้โดยตรง",
-            key="cfg_wsdir"
-        )
+        # Display current folder nicely
+        curr_ws = st.session_state.workspace_dir
+        st.markdown(f"<div style='padding: 8px 10px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 8px; font-size: 11px !important; color: {css_text_primary}; word-break: break-all;'>📍 <b>ตำแหน่งปัจจุบัน:</b><br><code>{curr_ws}</code></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
         
-        if st.button("📂 เบราว์ซ์เพื่อเลือกโฟลเดอร์เป้าหมาย...", use_container_width=True, key="btn_cfg_browse"):
+        # Primary Action: Browse or Pick Folder
+        if st.button("📂 คลิกเพื่อเลือกเบราว์ซ์โฟลเดอร์...", use_container_width=True, type="primary", key="btn_cfg_browse_easy"):
             selected_dir = browse_directory()
             if selected_dir:
-                # Local PC Tkinter success: auto-generate subfolders
                 os.makedirs(selected_dir, exist_ok=True)
                 os.makedirs(os.path.join(selected_dir, "1. นำเข้าใหม่ยังไม่ได้เช็ค"), exist_ok=True)
                 os.makedirs(os.path.join(selected_dir, "2. รพ ที่ verified แล้ว"), exist_ok=True)
@@ -1241,46 +1239,40 @@ with st.sidebar:
                 time.sleep(0.6)
                 st.rerun()
             else:
-                # Cloud mode: open Web Directory Picker
-                st.session_state.show_web_dir_picker = not st.session_state.show_web_dir_picker
+                st.session_state.show_web_dir_picker = not st.session_state.get("show_web_dir_picker", False)
+                st.rerun()
 
-        # Web Directory Picker UI (Interactive Explorer)
-        if st.session_state.show_web_dir_picker:
-            st.markdown("##### 🔍 เลือกเบราว์ซ์โฟลเดอร์เป้าหมายในระบบ:")
-            curr_p = st.session_state.current_browse_path
-            if not os.path.exists(curr_p):
-                curr_p = os.path.abspath(os.path.dirname(__file__))
-                
-            st.code(f"📍 ตำแหน่งปัจจุบัน: {curr_p}")
+        # Simple & Intuitive Folder Picker Panel
+        if st.session_state.get("show_web_dir_picker", False):
+            st.markdown("##### ⚙️ เลือกหรือกำหนดตำแหน่งใหม่:")
             
-            # List subdirectories
-            subdirs = []
-            try:
-                subdirs = [d for d in os.listdir(curr_p) if os.path.isdir(os.path.join(curr_p, d)) and not d.startswith(".")]
-            except Exception:
-                pass
-                
-            col_nav1, col_nav2 = st.columns([1.2, 1.8])
-            with col_nav1:
-                parent_p = os.path.dirname(curr_p)
-                if parent_p and parent_p != curr_p and st.button("⬆️ ขึ้นไป 1 ระดับ", use_container_width=True, key="btn_dir_up"):
-                    st.session_state.current_browse_path = parent_p
-                    st.rerun()
-            with col_nav2:
-                if subdirs:
-                    chosen_subdir = st.selectbox("เลือกโฟลเดอร์ย่อย:", ["-- เลือกเพื่อเข้าไปดู --"] + sorted(subdirs), key="sb_subdir_nav")
-                    if chosen_subdir and chosen_subdir != "-- เลือกเพื่อเข้าไปดู --":
-                        st.session_state.current_browse_path = os.path.join(curr_p, chosen_subdir)
-                        st.rerun()
-                        
-            # Create new folder option
-            new_folder_name = st.text_input("➕ หรือพิมพ์สร้างโฟลเดอร์ใหม่ที่นี่:", key="txt_new_subfolder", placeholder="เช่น LA_Project_2569")
+            # Quick presets
+            project_base = os.path.abspath(os.path.dirname(__file__))
+            p_default = project_base
+            p_storage = os.path.join(project_base, "lams_storage")
             
-            if st.button("✅ ยืนยันเลือกโฟลเดอร์นี้ และสร้างระบบคัดแยกโรงพยาบาลทันที", type="primary", use_container_width=True, key="btn_confirm_web_dir"):
-                target_p = curr_p
-                if new_folder_name.strip():
-                    target_p = os.path.join(curr_p, new_folder_name.strip())
-                    
+            preset_choice = st.radio(
+                "เลือกรูปแบบตำแหน่งที่ต้องการ:",
+                [
+                    f"📁 โฟลเดอร์หลักโครงการ ({os.path.basename(p_default)})",
+                    f"📁 โฟลเดอร์คัดแยกเฉพาะ (lams_storage)",
+                    "✏️ พิมพ์ระบุชื่อโฟลเดอร์เอง..."
+                ],
+                key="radio_folder_preset"
+            )
+            
+            custom_folder_input = ""
+            if "พิมพ์ระบุชื่อ" in preset_choice:
+                custom_folder_input = st.text_input("พิมพ์ชื่อหรือเส้นทางโฟลเดอร์:", value=curr_ws, key="txt_custom_ws_input")
+                
+            if st.button("✅ ยืนยันเปลี่ยนโฟลเดอร์และสร้างระบบคัดแยกทันที", use_container_width=True, type="primary", key="btn_apply_folder_easy"):
+                if "หลักโครงการ" in preset_choice:
+                    target_p = p_default
+                elif "lams_storage" in preset_choice:
+                    target_p = p_storage
+                else:
+                    target_p = custom_folder_input.strip() or curr_ws
+
                 os.makedirs(target_p, exist_ok=True)
                 os.makedirs(os.path.join(target_p, "1. นำเข้าใหม่ยังไม่ได้เช็ค"), exist_ok=True)
                 os.makedirs(os.path.join(target_p, "2. รพ ที่ verified แล้ว"), exist_ok=True)
@@ -1291,9 +1283,9 @@ with st.sidebar:
                     st.session_state.config = cfg
                     st.session_state.workspace_dir = target_p
                     st.session_state.show_web_dir_picker = False
-                    st.success(f"🎉 เลือกโฟลเดอร์สำเร็จ! สร้างระบบคัดแยกโรงพยาบาลแล้วที่: `{target_p}`")
-                    log_usage(st.session_state.operator_name, f"เบราว์ซ์เลือกโฟลเดอร์โครงการเป็น {target_p}")
-                    time.sleep(0.8)
+                    st.success(f"🎉 ตั้งค่าสำเร็จ! ระบบสร้างโฟลเดอร์คัดแยกโรงพยาบาลแล้วที่: `{target_p}`")
+                    log_usage(st.session_state.operator_name, f"เปลี่ยนโฟลเดอร์โครงการเป็น {target_p}")
+                    time.sleep(0.6)
                     st.rerun()
                 
         st.markdown("---")
