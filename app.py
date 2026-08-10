@@ -1209,53 +1209,92 @@ with st.sidebar:
         password = st.text_input("รหัสผ่านแอป (App Password):", value=cfg.get("password", ""), type="password", help="⚠️ ไม่ใช่รหัสผ่านปกติของเมล! ได้มาจาก:\n1. เปิดระบบยืนยัน 2 ขั้นตอน (2-Step Verification) ในบัญชี Google\n2. เข้าหน้าเว็บ myaccount.google.com/security\n3. ค้นหาคำว่า 'App Passwords' (รหัสผ่านสำหรับแอป)\n4. กดสร้างรหัสผ่านใหม่และคัดลอกรหัสผ่าน 16 ตัวมาระบุในช่องนี้", key="cfg_pwd")
         api_key = st.text_input("Gemini API Key:", value=cfg.get("api_key", ""), type="password", help="ใช้ในการส่งเนื้อความอีเมลและ PDF ไปประมวลผลดึงโครงสร้าง JSON", key="cfg_apikey")
         
-        # Stacked Folder Selector
+        # Web Directory Picker State
+        if "show_web_dir_picker" not in st.session_state:
+            st.session_state.show_web_dir_picker = False
+        if "current_browse_path" not in st.session_state:
+            st.session_state.current_browse_path = st.session_state.workspace_dir
+
         st.markdown("---")
         st.markdown("#### 📁 กำหนดเส้นทางโฟลเดอร์สำหรับจัดเก็บเอกสาร:")
+        
         workspace_dir_input = st.text_input(
-            "ระบุเส้นทาง/โฟลเดอร์เก็บข้อมูลโครงการ:", 
+            "โฟลเดอร์เก็บข้อมูลโครงการปัจจุบัน:", 
             value=st.session_state.workspace_dir, 
-            help="ระบุเส้นทางโฟลเดอร์ เช่น D:/งานส่วนกลาง/LA_Docs หรือ C:/LAMS_Data ระบบจะสร้างโฟลเดอร์ย่อยแยกตามรายชื่อโรงพยาบาลให้อัตโนมัติในเส้นทางนี้",
+            help="สามารถเลือกผ่านปุ่มเบราว์ซ์ด้านล่าง หรือพิมพ์ระบุเส้นทางโฟลเดอร์ได้โดยตรง",
             key="cfg_wsdir"
         )
         
-        col_fb1, col_fb2 = st.columns(2)
-        with col_fb1:
-            if st.button("📂 เบราว์ซ์เลือกโฟลเดอร์...", use_container_width=True, key="btn_cfg_browse"):
-                selected_dir = browse_directory()
-                if selected_dir:
-                    st.session_state.workspace_dir = selected_dir
-                    st.rerun()
-                else:
-                    st.toast("💡 พิมพ์หรือแก้ไขเส้นทางโฟลเดอร์ในช่องพิมพ์ด้านบนได้เลยครับ", icon="📁")
-        with col_fb2:
-            btn_save_ws = st.button("💾 บันทึกเส้นทางโฟลเดอร์", use_container_width=True, type="primary", key="btn_cfg_save_ws")
+        if st.button("📂 เบราว์ซ์เพื่อเลือกโฟลเดอร์เป้าหมาย...", use_container_width=True, key="btn_cfg_browse"):
+            selected_dir = browse_directory()
+            if selected_dir:
+                # Local PC Tkinter success: auto-generate subfolders
+                os.makedirs(selected_dir, exist_ok=True)
+                os.makedirs(os.path.join(selected_dir, "1. นำเข้าใหม่ยังไม่ได้เช็ค"), exist_ok=True)
+                os.makedirs(os.path.join(selected_dir, "2. รพ ที่ verified แล้ว"), exist_ok=True)
+                cfg["workspace_dir"] = selected_dir
+                cfg["excel_path"] = os.path.join(selected_dir, "ตารางตรวจ LA สิงหาคม 69.xlsx")
+                save_config(cfg)
+                st.session_state.config = cfg
+                st.session_state.workspace_dir = selected_dir
+                st.success(f"🎉 บันทึกโฟลเดอร์และสร้างระบบคัดแยกโรงพยาบาลสำเร็จ: `{selected_dir}`")
+                time.sleep(0.6)
+                st.rerun()
+            else:
+                # Cloud mode: open Web Directory Picker
+                st.session_state.show_web_dir_picker = not st.session_state.show_web_dir_picker
 
-        if btn_save_ws:
-            w_path = workspace_dir_input.strip()
-            if w_path:
-                try:
-                    os.makedirs(w_path, exist_ok=True)
-                    os.makedirs(os.path.join(w_path, "1. นำเข้าใหม่ยังไม่ได้เช็ค"), exist_ok=True)
-                    os.makedirs(os.path.join(w_path, "2. รพ ที่ verified แล้ว"), exist_ok=True)
-                    cfg["email"] = email.strip()
-                    cfg["password"] = password.strip()
-                    cfg["api_key"] = api_key.strip()
-                    cfg["workspace_dir"] = w_path
-                    cfg["excel_path"] = os.path.join(w_path, "ตารางตรวจ LA สิงหาคม 69.xlsx")
-                    cfg["download_attachments"] = True
-                    
-                    if save_config(cfg):
-                        st.session_state.config = cfg
-                        st.session_state.workspace_dir = w_path
-                        st.success(f"🎉 ตั้งค่าสำเร็จ! ระบบจะบันทึกแยกตามรายชื่อโรงพยาบาลใน: `{w_path}`")
-                        log_usage(st.session_state.operator_name, f"เปลี่ยนเส้นทางโฟลเดอร์โครงการเป็น {w_path}")
-                        time.sleep(0.6)
+        # Web Directory Picker UI (Interactive Explorer)
+        if st.session_state.show_web_dir_picker:
+            st.markdown("##### 🔍 เลือกเบราว์ซ์โฟลเดอร์เป้าหมายในระบบ:")
+            curr_p = st.session_state.current_browse_path
+            if not os.path.exists(curr_p):
+                curr_p = os.path.abspath(os.path.dirname(__file__))
+                
+            st.code(f"📍 ตำแหน่งปัจจุบัน: {curr_p}")
+            
+            # List subdirectories
+            subdirs = []
+            try:
+                subdirs = [d for d in os.listdir(curr_p) if os.path.isdir(os.path.join(curr_p, d)) and not d.startswith(".")]
+            except Exception:
+                pass
+                
+            col_nav1, col_nav2 = st.columns([1.2, 1.8])
+            with col_nav1:
+                parent_p = os.path.dirname(curr_p)
+                if parent_p and parent_p != curr_p and st.button("⬆️ ขึ้นไป 1 ระดับ", use_container_width=True, key="btn_dir_up"):
+                    st.session_state.current_browse_path = parent_p
+                    st.rerun()
+            with col_nav2:
+                if subdirs:
+                    chosen_subdir = st.selectbox("เลือกโฟลเดอร์ย่อย:", ["-- เลือกเพื่อเข้าไปดู --"] + sorted(subdirs), key="sb_subdir_nav")
+                    if chosen_subdir and chosen_subdir != "-- เลือกเพื่อเข้าไปดู --":
+                        st.session_state.current_browse_path = os.path.join(curr_p, chosen_subdir)
                         st.rerun()
-                    else:
-                        st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
-                except Exception as err:
-                    st.error(f"ไม่สามารถสร้างโฟลเดอร์ตามเส้นทางที่ระบุได้: {err}")
+                        
+            # Create new folder option
+            new_folder_name = st.text_input("➕ หรือพิมพ์สร้างโฟลเดอร์ใหม่ที่นี่:", key="txt_new_subfolder", placeholder="เช่น LA_Project_2569")
+            
+            if st.button("✅ ยืนยันเลือกโฟลเดอร์นี้ และสร้างระบบคัดแยกโรงพยาบาลทันที", type="primary", use_container_width=True, key="btn_confirm_web_dir"):
+                target_p = curr_p
+                if new_folder_name.strip():
+                    target_p = os.path.join(curr_p, new_folder_name.strip())
+                    
+                os.makedirs(target_p, exist_ok=True)
+                os.makedirs(os.path.join(target_p, "1. นำเข้าใหม่ยังไม่ได้เช็ค"), exist_ok=True)
+                os.makedirs(os.path.join(target_p, "2. รพ ที่ verified แล้ว"), exist_ok=True)
+                
+                cfg["workspace_dir"] = target_p
+                cfg["excel_path"] = os.path.join(target_p, "ตารางตรวจ LA สิงหาคม 69.xlsx")
+                if save_config(cfg):
+                    st.session_state.config = cfg
+                    st.session_state.workspace_dir = target_p
+                    st.session_state.show_web_dir_picker = False
+                    st.success(f"🎉 เลือกโฟลเดอร์สำเร็จ! สร้างระบบคัดแยกโรงพยาบาลแล้วที่: `{target_p}`")
+                    log_usage(st.session_state.operator_name, f"เบราว์ซ์เลือกโฟลเดอร์โครงการเป็น {target_p}")
+                    time.sleep(0.8)
+                    st.rerun()
                 
         st.markdown("---")
         # Direct ZIP download of all project files to local PC
