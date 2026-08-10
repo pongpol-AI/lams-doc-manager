@@ -361,15 +361,23 @@ st.markdown(f"""
     
     /* Form Inputs and Selectboxes - High Contrast Green & Purple Theme */
     div[data-baseweb="select"],
-    div[data-baseweb="select"] *,
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="select"] > div > div,
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] p,
+    div[data-baseweb="select"] input,
     div[data-baseweb="input"],
-    div[data-baseweb="input"] *,
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="input"] input,
     div[role="combobox"],
-    div[role="combobox"] *,
+    div[role="combobox"] > div,
+    div[role="combobox"] span,
     .stSelectbox div[data-baseweb="select"],
-    .stSelectbox div[data-baseweb="select"] *,
+    .stSelectbox div[data-baseweb="select"] > div,
+    .stSelectbox div[data-baseweb="select"] span,
     div[data-testid="stTextInput"] input {{
         background-color: {css_widget_bg} !important;
+        background: {css_widget_bg} !important;
         color: {css_text_primary} !important;
         -webkit-text-fill-color: {css_text_primary} !important;
         fill: {css_text_primary} !important;
