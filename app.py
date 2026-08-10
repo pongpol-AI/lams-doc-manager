@@ -335,6 +335,50 @@ st.markdown("""
         border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     }
     
+    /* Form Inputs and Selectboxes - Forced Dark Slate Background & High Contrast Text */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div,
+    div[role="combobox"],
+    div[data-baseweb="select"] input,
+    .stSelectbox div[data-baseweb="select"],
+    div[data-testid="stTextInput"] input {
+        background-color: #151E2E !important;
+        color: #F8FAFC !important;
+        border: 1px solid rgba(99, 102, 241, 0.4) !important;
+        border-radius: 8px !important;
+    }
+
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div,
+    div[role="combobox"] span,
+    div[role="combobox"] div,
+    div[data-baseweb="select"] svg {
+        color: #F8FAFC !important;
+        fill: #F8FAFC !important;
+    }
+
+    /* Popover Dropdown Menu Items */
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="menu"],
+    div[role="listbox"] {
+        background-color: #151E2E !important;
+        border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    }
+
+    div[data-baseweb="popover"] li,
+    div[data-baseweb="menu"] li,
+    div[role="option"] {
+        color: #F8FAFC !important;
+        background-color: #151E2E !important;
+    }
+
+    div[data-baseweb="popover"] li:hover,
+    div[data-baseweb="menu"] li:hover,
+    div[role="option"]:hover {
+        background-color: #312E81 !important;
+        color: #FFFFFF !important;
+    }
+    
     /* Custom Card Style - Apple Liquid Glass Style (Dark Version) */
     .glass-card {
         background: rgba(21, 30, 46, 0.75) !important;
