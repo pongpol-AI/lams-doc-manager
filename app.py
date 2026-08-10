@@ -653,10 +653,14 @@ st.markdown(f"""
         display: none !important;
     }}
     
-    /* Remove padding and shift sidebar content to the very top edge */
+    /* Flexbox layout for sidebar content to push footer to the very bottom edge */
     [data-testid="stSidebarUserContent"] {{
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: calc(100vh - 20px) !important;
         padding-top: 0px !important;
         margin-top: -55px !important;
+        padding-bottom: 10px !important;
     }}
     div[data-testid="stSidebar"] > div:first-child {{
         padding-top: 0px !important;
@@ -1209,12 +1213,13 @@ with st.sidebar:
             st.session_state.operator_name = "ผู้ใช้งานทั่วไป"
             st.rerun()
 
-    st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
     st.markdown(
-        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 7px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; font-style: italic !important; line-height: 1.45; background: rgba(0,0,0,0.03); padding: 6px 4px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.12);'>"
-        f"<span style='color: {css_text_secondary}; font-size: 6.5px !important; font-style: italic;'>พัฒนาโดย</span><br>"
-        f"<span style='color: {css_text_primary}; font-size: 7.5px !important; font-weight: 600; font-style: italic; white-space: nowrap !important;'>ทนพ.ปองพล ฤกษ์เนาวรัตน์</span><br>"
-        f"<span style='color: {css_text_secondary}; font-size: 6.5px !important; font-style: italic;'>นักเทคนิคการแพทย์ ชำนาญการ</span>"
+        f"<div style='margin-top: auto; padding-top: 15px;'>"
+        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 6px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; font-style: italic !important; line-height: 1.35; background: rgba(0,0,0,0.02); padding: 4px 2px; border-radius: 5px; border: 1px solid rgba(128,128,128,0.12);'>"
+        f"<span style='color: {css_text_secondary}; font-size: 5.5px !important; font-style: italic;'>พัฒนาโดย</span><br>"
+        f"<span style='color: {css_text_primary}; font-size: 6.5px !important; font-weight: 600; font-style: italic; white-space: nowrap !important;'>ทนพ.ปองพล ฤกษ์เนาวรัตน์</span><br>"
+        f"<span style='color: {css_text_secondary}; font-size: 5.5px !important; font-style: italic;'>นักเทคนิคการแพทย์ ชำนาญการ</span>"
+        f"</div>"
         f"</div>",
         unsafe_allow_html=True
     )
