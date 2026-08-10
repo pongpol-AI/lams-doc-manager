@@ -272,11 +272,15 @@ st.markdown("""
         padding-right: 2rem !important;
     }
     
-    /* Global Font Settings */
-    html, body {
+    /* Global Font & Forced Dark Mode Theme */
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
         font-family: 'Prompt', 'Sarabun', sans-serif !important;
         background-color: #0B0F19 !important;
         color: #F3F4F6 !important;
+    }
+
+    [data-testid="stSidebar"], [data-testid="stSidebarContent"], [data-testid="stSidebarNav"] {
+        background-color: #151E2E !important;
     }
     
     /* Apply font and shrink text sizing to non-icon elements */
