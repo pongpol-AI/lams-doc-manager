@@ -1147,34 +1147,36 @@ with st.sidebar:
                 else:
                     st.error("ไม่พบบัญชีผู้ใช้งานนี้ในระบบ!")
     
-    st.markdown("### ⚙️ การตั้งค่าระบบดึงข้อมูล")
-    email = st.text_input("อีเมลดึงจดหมาย (Gmail):", value=cfg.get("email", ""))
-    password = st.text_input("รหัสผ่านแอป (App Password):", value=cfg.get("password", ""), type="password", help="⚠️ ไม่ใช่รหัสผ่านปกติของเมล! ได้มาจาก:\n1. เปิดระบบยืนยัน 2 ขั้นตอน (2-Step Verification) ในบัญชี Google\n2. เข้าหน้าเว็บ myaccount.google.com/security\n3. ค้นหาคำว่า 'App Passwords' (รหัสผ่านสำหรับแอป)\n4. กดสร้างรหัสผ่านใหม่และคัดลอกรหัสผ่าน 16 ตัวมาระบุในช่องนี้")
-    api_key = st.text_input("Gemini API Key:", value=cfg.get("api_key", ""), type="password", help="ใช้ในการส่งเนื้อความอีเมลและ PDF ไปประมวลผลดึงโครงสร้าง JSON")
-    
-    # Stacked Folder Selector
-    workspace_dir_input = st.text_input("โฟลเดอร์เก็บข้อมูลโครงการ:", value=st.session_state.workspace_dir)
-    if st.button("📂 คลิกเพื่อเลือกโฟลเดอร์บนเครื่อง...", use_container_width=True):
-        selected_dir = browse_directory()
-        if selected_dir:
-            st.session_state.workspace_dir = selected_dir
-            st.rerun()
-                
-    if st.button("💾 บันทึกการตั้งค่าลงเครื่อง", use_container_width=True, type="primary"):
-        cfg["email"] = email.strip()
-        cfg["password"] = password.strip()
-        cfg["api_key"] = api_key.strip()
-        cfg["workspace_dir"] = workspace_dir_input.strip()
-        cfg["excel_path"] = os.path.join(cfg["workspace_dir"], "ตารางตรวจ LA สิงหาคม 69.xlsx")
-        cfg["download_attachments"] = True
+    with st.expander("⚙️ ตั้งค่าระบบดึงข้อมูล (System Settings)"):
+        email = st.text_input("อีเมลดึงจดหมาย (Gmail):", value=cfg.get("email", ""), key="cfg_email")
+        password = st.text_input("รหัสผ่านแอป (App Password):", value=cfg.get("password", ""), type="password", help="⚠️ ไม่ใช่รหัสผ่านปกติของเมล! ได้มาจาก:\n1. เปิดระบบยืนยัน 2 ขั้นตอน (2-Step Verification) ในบัญชี Google\n2. เข้าหน้าเว็บ myaccount.google.com/security\n3. ค้นหาคำว่า 'App Passwords' (รหัสผ่านสำหรับแอป)\n4. กดสร้างรหัสผ่านใหม่และคัดลอกรหัสผ่าน 16 ตัวมาระบุในช่องนี้", key="cfg_pwd")
+        api_key = st.text_input("Gemini API Key:", value=cfg.get("api_key", ""), type="password", help="ใช้ในการส่งเนื้อความอีเมลและ PDF ไปประมวลผลดึงโครงสร้าง JSON", key="cfg_apikey")
         
-        if save_config(cfg):
-            st.session_state.config = cfg
-            st.session_state.workspace_dir = workspace_dir_input.strip()
-            st.success("บันทึกการตั้งค่าสำเร็จ!")
-            log_usage(st.session_state.operator_name, "บันทึกการตั้งค่า config.json ใหม่")
-        else:
-            st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
+        # Stacked Folder Selector
+        workspace_dir_input = st.text_input("โฟลเดอร์เก็บข้อมูลโครงการ:", value=st.session_state.workspace_dir, key="cfg_wsdir")
+        if st.button("📂 คลิกเพื่อเลือกโฟลเดอร์บนเครื่อง...", use_container_width=True, key="btn_cfg_browse"):
+            selected_dir = browse_directory()
+            if selected_dir:
+                st.session_state.workspace_dir = selected_dir
+                st.rerun()
+                    
+        if st.button("💾 บันทึกการตั้งค่าลงเครื่อง", use_container_width=True, type="primary", key="btn_cfg_save"):
+            cfg["email"] = email.strip()
+            cfg["password"] = password.strip()
+            cfg["api_key"] = api_key.strip()
+            cfg["workspace_dir"] = workspace_dir_input.strip()
+            cfg["excel_path"] = os.path.join(cfg["workspace_dir"], "ตารางตรวจ LA สิงหาคม 69.xlsx")
+            cfg["download_attachments"] = True
+            
+            if save_config(cfg):
+                st.session_state.config = cfg
+                st.session_state.workspace_dir = workspace_dir_input.strip()
+                st.success("บันทึกการตั้งค่าสำเร็จ!")
+                log_usage(st.session_state.operator_name, "บันทึกการตั้งค่า config.json ใหม่")
+                time.sleep(0.5)
+                st.rerun()
+            else:
+                st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
 
     st.markdown("---")
     # Theme Mode Selector (at very bottom)
