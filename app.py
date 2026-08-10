@@ -224,160 +224,207 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom Premium Styling
-st.markdown("""
+if "theme_mode" not in st.session_state:
+    st.session_state.theme_mode = "🌙 Dark Mode"
+
+is_dark_theme = (st.session_state.theme_mode == "🌙 Dark Mode")
+
+# Theme Palette Tokens (Green, White, Purple)
+if is_dark_theme:
+    css_bg_main = "#0B0F19"
+    css_bg_sidebar = "#151E2E"
+    css_text_primary = "#F8FAFC"
+    css_text_secondary = "#94A3B8"
+    css_card_bg = "rgba(21, 30, 46, 0.85)"
+    css_card_border = "rgba(16, 185, 129, 0.25)"
+    css_widget_bg = "#151E2E"
+    css_widget_border = "rgba(139, 92, 246, 0.4)"
+    css_accent_green = "#10B981"
+    css_accent_purple = "#8B5CF6"
+    css_grad_title = "linear-gradient(135deg, #34D399 0%, #C084FC 100%)"
+    css_btn_sec_bg = "linear-gradient(135deg, #151E2E 0%, #1E293B 100%)"
+    css_popover_bg = "#151E2E"
+else:
+    css_bg_main = "#F8FAFC"
+    css_bg_sidebar = "#F1F5F9"
+    css_text_primary = "#0F172A"
+    css_text_secondary = "#475569"
+    css_card_bg = "#FFFFFF"
+    css_card_border = "rgba(16, 185, 129, 0.3)"
+    css_widget_bg = "#FFFFFF"
+    css_widget_border = "rgba(124, 58, 237, 0.35)"
+    css_accent_green = "#059669"
+    css_accent_purple = "#7C3AED"
+    css_grad_title = "linear-gradient(135deg, #059669 0%, #7C3AED 100%)"
+    css_btn_sec_bg = "linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 100%)"
+    css_popover_bg = "#FFFFFF"
+
+# Custom Dynamic Styling
+st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;700&display=swap');
     
     /* Hide default Streamlit top decoration line */
-    div[data-testid="stDecoration"] {
+    div[data-testid="stDecoration"] {{
         display: none !important;
         visibility: hidden !important;
         height: 0px !important;
-    }
+    }}
     
-    /* Make the header transparent and click-through, except for the expand control button */
-    header[data-testid="stHeader"] {
+    header[data-testid="stHeader"] {{
         background-color: transparent !important;
         background: transparent !important;
         box-shadow: none !important;
         border: none !important;
         pointer-events: none !important;
-    }
+    }}
     
-    /* Re-enable clicks for the collapsedControl button so we can expand the sidebar */
     header[data-testid="stHeader"] button, 
     header[data-testid="stHeader"] [data-testid="collapsedControl"],
-    [data-testid="collapsedControl"] {
+    [data-testid="collapsedControl"] {{
         pointer-events: auto !important;
-    }
+    }}
     
-    /* Hide Deploy button and Main Menu (three dots icon) inside the header */
     div[data-testid="stMainMenu"], 
     button[aria-label="View Menu"],
     [data-testid="stHeaderActionElements"],
     .stDeployButton,
-    button[data-testid="stDeployButton"] {
+    button[data-testid="stDeployButton"] {{
         display: none !important;
         visibility: hidden !important;
         width: 0px !important;
         height: 0px !important;
-    }
+    }}
     
-    /* Compact Streamlit UI spacing to fit on one screen page */
-    .block-container {
-        padding-top: 2rem !important;
+    /* Compact Streamlit UI spacing and expanded width */
+    .block-container {{
+        max-width: 95% !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 1rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-    }
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }}
     
-    /* Global Font & Forced Dark Mode Theme */
-    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
+    /* Global Font & Dynamic Theme Background */
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {{
         font-family: 'Prompt', 'Sarabun', sans-serif !important;
-        background-color: #0B0F19 !important;
-        color: #F3F4F6 !important;
-    }
+        background-color: {css_bg_main} !important;
+        color: {css_text_primary} !important;
+    }}
 
-    [data-testid="stSidebar"], [data-testid="stSidebarContent"], [data-testid="stSidebarNav"] {
-        background-color: #151E2E !important;
-    }
+    [data-testid="stSidebar"], [data-testid="stSidebarContent"], [data-testid="stSidebarNav"] {{
+        background-color: {css_bg_sidebar} !important;
+    }}
     
-    /* Apply font and shrink text sizing to non-icon elements */
-    h1, h2, h3, h4, h5, h6, input, select, textarea, div.stMarkdown, div[data-testid="stMarkdownContainer"] {
+    h1, h2, h3, h4, h5, h6, input, select, textarea, div.stMarkdown, div[data-testid="stMarkdownContainer"] {{
         font-family: 'Prompt', 'Sarabun', sans-serif !important;
-        color: #F3F4F6 !important;
-    }
+        color: {css_text_primary} !important;
+    }}
     
-    h1 { font-size: 1.6em !important; font-weight: 700 !important; color: #FFFFFF !important; }
-    h2 { font-size: 1.35em !important; font-weight: 600 !important; color: #FFFFFF !important; }
-    h3 { font-size: 1.15em !important; font-weight: 500 !important; color: #E5E7EB !important; }
+    h1 {{ font-size: 1.6em !important; font-weight: 700 !important; color: {css_text_primary} !important; }}
+    h2 {{ font-size: 1.35em !important; font-weight: 600 !important; color: {css_text_primary} !important; }}
+    h3 {{ font-size: 1.15em !important; font-weight: 500 !important; color: {css_text_primary} !important; }}
     
-    /* Target paragraph, label, and button wrappers without touching icon ligatures */
     p:not([class*="st-ae"]):not([class*="st-af"]):not([class*="st-ag"]):not([class*="st-ah"]),
     label:not([class*="st-ae"]):not([class*="st-af"]):not([class*="st-ag"]):not([class*="st-ah"]),
-    button:not([class*="st-ae"]):not([class*="st-af"]):not([class*="st-ag"]):not([class*="st-ah"]) {
+    button:not([class*="st-ae"]):not([class*="st-af"]):not([class*="st-ag"]):not([class*="st-ah"]) {{
         font-family: 'Prompt', 'Sarabun', sans-serif !important;
         font-size: 13px !important;
-    }
+        color: {css_text_primary} !important;
+    }}
     
-    /* Protect and restore all Streamlit icons from font-family overrides */
-    [data-testid="stIcon"], 
-    [class*="icon"], 
-    [class*="Icon"], 
-    [class*="symbol"], 
-    [class*="Symbol"], 
-    svg, 
-    i,
-    .st-ae, .st-af, .st-ag, .st-ah, .st-ai, .st-aj, .st-ak, .st-al, .st-am, .st-an, .st-ao,
-    span[class*="st-ae"],
-    span[class*="st-af"],
-    span[class*="st-ag"],
-    span[class*="st-ah"] {
+    [data-testid="stIcon"], [class*="icon"], [class*="Icon"], [class*="symbol"], [class*="Symbol"], svg, i {{
         font-family: "Material Icons", "Material Symbols Outlined", "Material Symbols Rounded", inherit !important;
-    }
+    }}
     
     /* Form Widget Labels as High-Contrast Colored Blocks */
     div[data-testid="stWidgetLabel"] p, 
-    div[data-testid="stWidgetLabel"] label {
+    div[data-testid="stWidgetLabel"] label {{
         display: inline-block !important;
-        background-color: #151E2E !important;
-        color: #F3F4F6 !important;
+        background-color: {css_widget_bg} !important;
+        color: {css_text_primary} !important;
         padding: 6px 12px !important;
         border-radius: 6px !important;
         font-size: 13.5px !important;
         font-weight: 500 !important;
         margin-bottom: 8px !important;
-        border-left: 4px solid #6366F1 !important; /* Indigo Accent */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    }
+        border-left: 4px solid {css_accent_green} !important; /* Emerald Green Accent */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        border-top: 1px solid {css_widget_border} !important;
+        border-right: 1px solid {css_widget_border} !important;
+        border-bottom: 1px solid {css_widget_border} !important;
+    }}
     
-    /* Form Inputs and Selectboxes - Forced Dark Slate Background & High Contrast Text */
+    /* Form Inputs and Selectboxes - High Contrast Green & Purple Theme */
     div[data-baseweb="select"] > div,
     div[data-baseweb="input"] > div,
     div[role="combobox"],
     div[data-baseweb="select"] input,
     .stSelectbox div[data-baseweb="select"],
-    div[data-testid="stTextInput"] input {
-        background-color: #151E2E !important;
-        color: #F8FAFC !important;
-        border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    div[data-testid="stTextInput"] input {{
+        background-color: {css_widget_bg} !important;
+        color: {css_text_primary} !important;
+        border: 1px solid {css_widget_border} !important;
         border-radius: 8px !important;
-    }
+    }}
 
     div[data-baseweb="select"] span,
     div[data-baseweb="select"] div,
     div[role="combobox"] span,
     div[role="combobox"] div,
-    div[data-baseweb="select"] svg {
-        color: #F8FAFC !important;
-        fill: #F8FAFC !important;
-    }
+    div[data-baseweb="select"] svg {{
+        color: {css_text_primary} !important;
+        fill: {css_text_primary} !important;
+    }}
 
     /* Popover Dropdown Menu Items */
     div[data-baseweb="popover"] ul,
     div[data-baseweb="menu"],
-    div[role="listbox"] {
-        background-color: #151E2E !important;
-        border: 1px solid rgba(99, 102, 241, 0.4) !important;
-    }
+    div[role="listbox"] {{
+        background-color: {css_popover_bg} !important;
+        border: 1px solid {css_widget_border} !important;
+    }}
 
     div[data-baseweb="popover"] li,
     div[data-baseweb="menu"] li,
-    div[role="option"] {
-        color: #F8FAFC !important;
-        background-color: #151E2E !important;
-    }
+    div[role="option"] {{
+        color: {css_text_primary} !important;
+        background-color: {css_popover_bg} !important;
+    }}
 
     div[data-baseweb="popover"] li:hover,
     div[data-baseweb="menu"] li:hover,
-    div[role="option"]:hover {
-        background-color: #312E81 !important;
+    div[role="option"]:hover {{
+        background-color: {css_accent_purple} !important;
         color: #FFFFFF !important;
-    }
+    }}
+
+    /* Streamlit Button Styling - Green & Purple Theme */
+    div.stButton > button,
+    div.stButton > button[kind="secondary"] {{
+        background: {css_btn_sec_bg} !important;
+        color: {css_text_primary} !important;
+        border: 1px solid {css_widget_border} !important;
+        border-radius: 10px !important;
+        padding: 8px 16px !important;
+        font-weight: 600 !important;
+        font-size: 15px !important;
+        min-height: 56px !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }}
+    
+    div.stButton > button[kind="primary"] {{
+        background: linear-gradient(135deg, {css_accent_green} 0%, {css_accent_purple} 100%) !important;
+        color: #FFFFFF !important;
+        border: 1px solid #10B981 !important;
+        box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.4), 0 0 14px 2px rgba(139, 92, 246, 0.3) !important;
+        font-weight: 700 !important;
+    }}
+    
+    div.stButton > button:hover {{
+        transform: translateY(-2px) scale(1.01) !important;
+        border-color: {css_accent_green} !important;
+    }}
     
     /* Custom Card Style - Apple Liquid Glass Style (Dark Version) */
     .glass-card {
@@ -1050,16 +1097,28 @@ with st.sidebar:
     
     st.markdown(f"""
     <div style='padding: 16px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; box-shadow: 0 4px 20px 0 rgba(0,0,0,0.25); text-align: center; margin-bottom: 12px;'>
-        <div style='background: linear-gradient(135deg, #38BDF8 0%, #EC4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 24px !important; font-weight: 900; line-height: 1.3;'>Laboratory Accreditation Management System (LAMS)</div>
+        <div style='background: linear-gradient(135deg, #10B981 0%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 24px !important; font-weight: 900; line-height: 1.3;'>Laboratory Accreditation Management System (LAMS)</div>
         <div style='color: #94A3B8; font-size: 9.5px !important; font-weight: 300 !important; font-style: italic; margin-top: 8px; line-height: 1.4;'>Integrated Quality, Evidence & Assessment Management Platform</div>
     </div>
     
-    <div style='padding: 12px; background: rgba(244, 63, 94, 0.04); border: 1px solid rgba(244, 63, 94, 0.15); border-radius: 8px; text-align: center; margin-bottom: 15px;'>
-        <div style='color: #F43F5E; font-size: 16px !important; font-weight: 700;'>สวัสดี! {disp_name}</div>
-        <div style='color: #F43F5E; font-size: 14px !important; font-weight: 600; margin-top: 4px;'>{full_name}</div>
-        <div style='color: #FDA4AF; font-size: 10px !important; font-weight: 400; margin-top: 6px; line-height: 1.4;'>{user_role}</div>
+    <div style='padding: 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; text-align: center; margin-bottom: 15px;'>
+        <div style='color: #10B981; font-size: 16px !important; font-weight: 700;'>สวัสดี! {disp_name}</div>
+        <div style='color: #059669; font-size: 14px !important; font-weight: 600; margin-top: 4px;'>{full_name}</div>
+        <div style='color: #8B5CF6; font-size: 10px !important; font-weight: 400; margin-top: 6px; line-height: 1.4;'>{user_role}</div>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Theme Mode Selector
+    st.markdown("### 🎨 ธีมแสดงผล (Theme Mode)")
+    theme_choice = st.selectbox(
+        "เลือกโหมดสีหน้าจอ:",
+        ["🌙 Dark Mode", "☀️ Bright / Light Mode"],
+        index=0 if st.session_state.theme_mode == "🌙 Dark Mode" else 1,
+        key="theme_mode_selectbox"
+    )
+    if theme_choice != st.session_state.theme_mode:
+        st.session_state.theme_mode = theme_choice
+        st.rerun()
     
     if st.button("🚪 ออกจากระบบ (Logout)", use_container_width=True):
         st.session_state.logged_in = False
@@ -1174,8 +1233,8 @@ if st.session_state.active_menu == 1:
         
     st.subheader("📥 เมนูที่ 1: สำรวจอีเมลและนำเข้าเอกสารจากอีเมล")
     
-    col_ctrl, col_act = st.columns([2, 3])
-    with col_ctrl:
+    col_sel, col_btn = st.columns([2.5, 2.5])
+    with col_sel:
         range_val = st.selectbox(
             "ช่วงเวลาในการดึงอีเมล:", 
             [
@@ -1189,7 +1248,8 @@ if st.session_state.active_menu == 1:
                 "เฉพาะที่ยังไม่ได้อ่าน (ทั้งหมด)"
             ]
         )
-        
+    with col_btn:
+        st.write("<div style='height: 28px;'></div>", unsafe_allow_html=True)
         if st.button("📥 ดึงและอ่านอีเมลล่าสุดจาก Gmail", type="secondary", use_container_width=True):
             if not cfg.get("email") or not cfg.get("password"):
                 st.error("กรุณาระบุอีเมลและรหัสผ่านแอป Gmail ในแทบตั้งค่าด้านซ้ายก่อน!")
@@ -1235,15 +1295,6 @@ if st.session_state.active_menu == 1:
                             st.warning("ไม่พบจดหมายใหม่ในระยะเวลาที่ระบุ")
                     except Exception as e:
                         st.error(f"เกิดข้อผิดพลาดในการดึงอีเมล: {e}")
-                        
-    with col_act:
-        st.markdown("""
-        **💡 คำแนะนำการนำเข้าด่วน (Quick Import):**
-        1. เลือกช่วงเวลาแล้วกดปุ่ม **'ค้นหาอีเมลจากเซิร์ฟเวอร์'**
-        2. ติ๊กเลือกอีเมลของโรงพยาบาลที่ส่งเข้ามา
-        3. กดปุ่ม **'⚡ ดาวน์โหลดและนำเข้าด่วน'** ระบบจะทำการบันทึกไฟล์แนบ ดึงข้อมูลเบื้องต้นด้วย AI และบันทึกประวัติตาราง Excel รวดเดียวทั้งหมด
-        4. เมื่อว่างแล้ว คุณสามารถเข้าไปประเมินความสมบูรณ์และจัดสรรผู้ตรวจประเมินทีละแห่งได้ใน **'เมนูที่ 2'**
-        """)
         
     if st.session_state.fetched_emails:
         st.markdown("#### 📧 รายชื่ออีเมลที่พบ:")
