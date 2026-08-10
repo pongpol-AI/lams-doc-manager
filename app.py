@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import os
 import json
 import shutil
@@ -1228,11 +1229,11 @@ with st.sidebar:
         
         # Display current folder nicely
         curr_ws = st.session_state.workspace_dir
-        st.markdown(f"<div style='padding: 8px 10px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 8px; font-size: 11px !important; color: {css_text_primary}; word-break: break-all;'>📍 <b>ตำแหน่งปัจจุบัน:</b><br><code>{curr_ws}</code></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='padding: 8px 10px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 8px; font-size: 10.5px !important; color: {css_text_primary}; word-break: break-all; overflow-wrap: anywhere;'>📍 <b>ตำแหน่งปัจจุบัน:</b><br><code style='font-size: 9.5px !important; word-break: break-all; overflow-wrap: anywhere;'>{curr_ws}</code></div>", unsafe_allow_html=True)
         st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
         
         # Primary Action: Browse or Pick Folder
-        if st.button("📂 คลิกเพื่อเลือกเบราว์ซ์โฟลเดอร์...", use_container_width=True, type="primary", key="btn_cfg_browse_easy"):
+        if st.button("📂 คลิกเลือกโฟลเดอร์...", use_container_width=True, type="primary", key="btn_cfg_browse_easy"):
             selected_dir = browse_directory()
             if selected_dir:
                 os.makedirs(selected_dir, exist_ok=True)
@@ -1243,7 +1244,7 @@ with st.sidebar:
                 save_config(cfg)
                 st.session_state.config = cfg
                 st.session_state.workspace_dir = selected_dir
-                st.success(f"🎉 บันทึกโฟลเดอร์และสร้างระบบคัดแยกโรงพยาบาลสำเร็จ: `{selected_dir}`")
+                st.success(f"🎉 บันทึกโฟลเดอร์และสร้างระบบคัดแยกสำเร็จ: `{selected_dir}`")
                 time.sleep(0.6)
                 st.rerun()
             else:
@@ -1254,16 +1255,41 @@ with st.sidebar:
         if st.session_state.get("show_web_dir_picker", False):
             st.markdown("##### ⚙️ เลือกหรือกำหนดตำแหน่งใหม่:")
             
+            # Chrome / Edge Native Directory Access API
+            components.html("""
+            <div style="font-family: sans-serif; text-align: center; margin: 2px 0;">
+                <button id="btnPickLocal" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                    💻 คลิกเลือกโฟลเดอร์บน PC (Chrome/Edge)
+                </button>
+                <div id="dirResult" style="margin-top: 6px; font-size: 10px; color: #059669; font-weight: 600; display: none; background: #ECFDF5; padding: 5px; border-radius: 6px; border: 1px solid #A7F3D0;"></div>
+            </div>
+            <script>
+            document.getElementById('btnPickLocal').addEventListener('click', async () => {
+                try {
+                    if ('showDirectoryPicker' in window) {
+                        const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+                        document.getElementById('dirResult').style.display = 'block';
+                        document.getElementById('dirResult').innerHTML = '✅ เชื่อมต่อโฟลเดอร์ PC สำเร็จ: <b>' + dirHandle.name + '</b><br><small style="color:#047857;">ไฟล์จะถูกบันทึกตรงเข้าโฟลเดอร์นี้ทันที</small>';
+                    } else {
+                        alert('เบราว์เซอร์นี้ไม่รองรับ Direct Directory Access กรุณาใช้งานผ่าน Chrome หรือ Edge บนคอมพิวเตอร์ครับ');
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+            </script>
+            """, height=70)
+            
             # Quick presets
             project_base = os.path.abspath(os.path.dirname(__file__))
             p_default = project_base
             p_storage = os.path.join(project_base, "lams_storage")
             
             preset_choice = st.radio(
-                "เลือกรูปแบบตำแหน่งที่ต้องการ:",
+                "รูปแบบตำแหน่งบนเซิร์ฟเวอร์:",
                 [
-                    f"📁 โฟลเดอร์หลักโครงการ ({os.path.basename(p_default)})",
-                    f"📁 โฟลเดอร์คัดแยกเฉพาะ (lams_storage)",
+                    f"📁 โฟลเดอร์หลัก ({os.path.basename(p_default)})",
+                    f"📁 โฟลเดอร์คัดแยก (lams_storage)",
                     "✏️ พิมพ์ระบุชื่อโฟลเดอร์เอง..."
                 ],
                 key="radio_folder_preset"
@@ -1273,8 +1299,8 @@ with st.sidebar:
             if "พิมพ์ระบุชื่อ" in preset_choice:
                 custom_folder_input = st.text_input("พิมพ์ชื่อหรือเส้นทางโฟลเดอร์:", value=curr_ws, key="txt_custom_ws_input")
                 
-            if st.button("✅ ยืนยันเปลี่ยนโฟลเดอร์และสร้างระบบคัดแยกทันที", use_container_width=True, type="primary", key="btn_apply_folder_easy"):
-                if "หลักโครงการ" in preset_choice:
+            if st.button("✅ ยืนยันเปลี่ยนโฟลเดอร์ทันที", use_container_width=True, type="primary", key="btn_apply_folder_easy"):
+                if "หลัก" in preset_choice:
                     target_p = p_default
                 elif "lams_storage" in preset_choice:
                     target_p = p_storage
@@ -1291,7 +1317,7 @@ with st.sidebar:
                     st.session_state.config = cfg
                     st.session_state.workspace_dir = target_p
                     st.session_state.show_web_dir_picker = False
-                    st.success(f"🎉 ตั้งค่าสำเร็จ! ระบบสร้างโฟลเดอร์คัดแยกโรงพยาบาลแล้วที่: `{target_p}`")
+                    st.success(f"🎉 ตั้งค่าสำเร็จ! สร้างโฟลเดอร์แล้วที่: `{target_p}`")
                     log_usage(st.session_state.operator_name, f"เปลี่ยนโฟลเดอร์โครงการเป็น {target_p}")
                     time.sleep(0.6)
                     st.rerun()
@@ -1312,7 +1338,7 @@ with st.sidebar:
 
         if excel_bytes:
             st.download_button(
-                label="📊 ดาวน์โหลดตาราง Excel สรุปข้อมูลล่าสุด",
+                label="📊 โหลดตาราง Excel สรุปข้อมูล",
                 data=excel_bytes,
                 file_name=os.path.basename(excel_p),
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -1320,12 +1346,12 @@ with st.sidebar:
                 key="btn_dl_excel_settings"
             )
         else:
-            st.caption("📊 ตาราง Excel สรุปข้อมูล: `ตารางตรวจ LA สิงหาคม 69.xlsx` (จะถูกสร้างอัตโนมัติเมื่อเริ่มบันทึกข้อมูล)")
+            st.caption("📊 ตาราง Excel: `ตารางตรวจ LA สิงหาคม 69.xlsx` (สร้างเมื่อเริ่มบันทึกข้อมูล)")
 
         # Direct ZIP download of all project files to local PC
         zip_buffer_settings = create_workspace_zip()
         st.download_button(
-            label="📦 ดาวน์โหลดเอกสารทั้งหมดลงเครื่อง (Zip)",
+            label="📦 โหลดเอกสารทั้งหมด (ZIP)",
             data=zip_buffer_settings,
             file_name=f"LAMS_Documents_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.zip",
             mime="application/zip",
