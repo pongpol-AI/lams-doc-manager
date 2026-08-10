@@ -229,7 +229,7 @@ st.set_page_config(
 )
 
 if "theme_mode" not in st.session_state:
-    st.session_state.theme_mode = "🌙 Dark Mode"
+    st.session_state.theme_mode = "☀️ Bright / Light Mode"
 
 is_dark_theme = (st.session_state.theme_mode == "🌙 Dark Mode")
 
