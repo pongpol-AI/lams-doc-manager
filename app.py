@@ -1289,6 +1289,31 @@ with st.sidebar:
                     st.rerun()
                 
         st.markdown("---")
+        # Direct Excel file download link
+        excel_p = cfg.get("excel_path", os.path.join(st.session_state.workspace_dir, "ตารางตรวจ LA สิงหาคม 69.xlsx"))
+        if not os.path.exists(excel_p):
+            excel_p = os.path.join(st.session_state.workspace_dir, "ตารางตรวจ LA สิงหาคม 69.xlsx")
+            
+        excel_bytes = b""
+        if os.path.exists(excel_p):
+            try:
+                with open(excel_p, "rb") as ef:
+                    excel_bytes = ef.read()
+            except Exception:
+                pass
+
+        if excel_bytes:
+            st.download_button(
+                label="📊 ดาวน์โหลดตาราง Excel สรุปข้อมูลล่าสุด",
+                data=excel_bytes,
+                file_name=os.path.basename(excel_p),
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+                key="btn_dl_excel_settings"
+            )
+        else:
+            st.caption("📊 ตาราง Excel สรุปข้อมูล: `ตารางตรวจ LA สิงหาคม 69.xlsx` (จะถูกสร้างอัตโนมัติเมื่อเริ่มบันทึกข้อมูล)")
+
         # Direct ZIP download of all project files to local PC
         zip_buffer_settings = create_workspace_zip()
         st.download_button(
