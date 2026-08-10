@@ -1109,18 +1109,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # Theme Mode Selector
-    st.markdown("### 🎨 ธีมแสดงผล (Theme Mode)")
-    theme_choice = st.selectbox(
-        "เลือกโหมดสีหน้าจอ:",
-        ["🌙 Dark Mode", "☀️ Bright / Light Mode"],
-        index=0 if st.session_state.theme_mode == "🌙 Dark Mode" else 1,
-        key="theme_mode_selectbox"
-    )
-    if theme_choice != st.session_state.theme_mode:
-        st.session_state.theme_mode = theme_choice
-        st.rerun()
-    
     if st.button("🚪 ออกจากระบบ (Logout)", use_container_width=True):
         st.session_state.logged_in = False
         st.session_state.user_info = None
@@ -1187,13 +1175,26 @@ with st.sidebar:
             log_usage(st.session_state.operator_name, "บันทึกการตั้งค่า config.json ใหม่")
         else:
             st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
-            
+
     st.markdown("---")
+    # Theme Mode Selector (at very bottom)
+    st.markdown("### 🎨 ธีมแสดงผล (Theme Mode)")
+    theme_choice = st.selectbox(
+        "เลือกโหมดสีหน้าจอ:",
+        ["🌙 Dark Mode", "☀️ Bright / Light Mode"],
+        index=0 if st.session_state.theme_mode == "🌙 Dark Mode" else 1,
+        key="theme_mode_selectbox"
+    )
+    if theme_choice != st.session_state.theme_mode:
+        st.session_state.theme_mode = theme_choice
+        st.rerun()
+
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     st.markdown(
-        "<div style='text-align: center; color: #64748B; font-size: 11px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; line-height: 1.4;'>"
-        "พัฒนาโดย ทนพ.ปองพล ฤกษ์เนาวรัตน์<br>"
-        "นักเทคนิคการแพทย์ชำนาญการ"
-        "</div>",
+        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 10px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; line-height: 1.5; white-space: nowrap !important; background: rgba(0,0,0,0.03); padding: 8px 4px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.15);'>"
+        f"<span style='color: {css_text_primary}; font-weight: 600;'>พัฒนาโดย</span> ทนพ.ปองพล ฤกษ์เนาวรัตน์<br>"
+        f"<span style='color: {css_text_secondary}; font-size: 9.5px !important;'>นักเทคนิคการแพทย์ชำนาญการ</span>"
+        f"</div>",
         unsafe_allow_html=True
     )
 
