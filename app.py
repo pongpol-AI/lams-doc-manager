@@ -156,66 +156,70 @@ def render_login_page():
         
         with tab_login:
             st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-            u_name = st.text_input("ชื่อผู้ใช้งาน (Username):", key="login_username")
-            u_pwd = st.text_input("รหัสผ่าน (Password):", type="password", key="login_password")
-            
-            st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-            if st.button("🔑 ลงชื่อเข้าใช้งาน", use_container_width=True, type="primary"):
-                if not u_name or not u_pwd:
-                    st.error("กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน!")
-                else:
-                    users = load_users()
-                    user = users.get(u_name.strip().lower())
-                    if user:
-                        hashed, _ = hash_password(u_pwd, user["salt"])
-                        if hashed == user["password_hash"]:
-                            st.session_state.logged_in = True
-                            st.session_state.user_info = user
-                            st.session_state.operator_name = user["fullname"]
-                            st.success("เข้าสู่ระบบสำเร็จ!")
-                            time.sleep(0.5)
-                            st.rerun()
-                        else:
-                            st.error("รหัสผ่านไม่ถูกต้อง!")
+            with st.form("form_login", border=False):
+                u_name = st.text_input("ชื่อผู้ใช้งาน (Username):", key="login_username")
+                u_pwd = st.text_input("รหัสผ่าน (Password):", type="password", key="login_password")
+                
+                st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+                login_submitted = st.form_submit_button("🔑 ลงชื่อเข้าใช้งาน", use_container_width=True, type="primary")
+                if login_submitted:
+                    if not u_name or not u_pwd:
+                        st.error("กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน!")
                     else:
-                        st.error("ไม่พบชื่อผู้ใช้งานนี้ในระบบ!")
+                        users = load_users()
+                        user = users.get(u_name.strip().lower())
+                        if user:
+                            hashed, _ = hash_password(u_pwd, user["salt"])
+                            if hashed == user["password_hash"]:
+                                st.session_state.logged_in = True
+                                st.session_state.user_info = user
+                                st.session_state.operator_name = user["fullname"]
+                                st.success("เข้าสู่ระบบสำเร็จ!")
+                                time.sleep(0.5)
+                                st.rerun()
+                            else:
+                                st.error("รหัสผ่านไม่ถูกต้อง!")
+                        else:
+                            st.error("ไม่พบชื่อผู้ใช้งานนี้ในระบบ!")
                         
         with tab_register:
             st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-            reg_username = st.text_input("ชื่อผู้ใช้งานที่ต้องการสร้าง (Username):", key="reg_username", help="ใช้ในการเข้าสู่ระบบภาษาอังกฤษตัวเล็กเท่านั้น")
-            reg_pwd = st.text_input("รหัสผ่าน (Password):", type="password", key="reg_pwd")
-            reg_pwd_conf = st.text_input("ยืนยันรหัสผ่าน (Confirm Password):", type="password", key="reg_pwd_conf")
-            reg_disp = st.text_input("ชื่อเล่น / ชื่อย่อแสดงผล (e.g. พี่เข้ม, ปองพล):", key="reg_disp")
-            reg_full = st.text_input("ชื่อ-นามสกุลจริง (e.g. ทนพ.สุทัศน์ บุญยงค์):", key="reg_full")
-            reg_role = st.text_input("ตำแหน่ง / บทบาท (e.g. อนุกรรมการตรวจประเมิน LA...):", key="reg_role")
-            
-            st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-            if st.button("📝 ลงทะเบียนสมาชิกใหม่", use_container_width=True):
-                username_clean = reg_username.strip().lower()
-                if not username_clean or not reg_pwd or not reg_disp or not reg_full or not reg_role:
-                    st.error("กรุณากรอกข้อมูลให้ครบทุกช่อง!")
-                elif not re.match(r"^[a-zA-Z0-9_\-]+$", username_clean):
-                    st.error("ชื่อผู้ใช้งานต้องเป็นตัวอักษรภาษาอังกฤษหรือตัวเลขเท่านั้น!")
-                elif reg_pwd != reg_pwd_conf:
-                    st.error("รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน!")
-                else:
-                    users = load_users()
-                    if username_clean in users:
-                        st.error("ขออภัย! ชื่อผู้ใช้งานนี้ถูกใช้ไปแล้วในระบบ")
+            with st.form("form_register", border=False):
+                reg_username = st.text_input("ชื่อผู้ใช้งานที่ต้องการสร้าง (Username):", key="reg_username", help="ใช้ในการเข้าสู่ระบบภาษาอังกฤษตัวเล็กเท่านั้น")
+                reg_pwd = st.text_input("รหัสผ่าน (Password):", type="password", key="reg_pwd")
+                reg_pwd_conf = st.text_input("ยืนยันรหัสผ่าน (Confirm Password):", type="password", key="reg_pwd_conf")
+                reg_disp = st.text_input("ชื่อเล่น / ชื่อย่อแสดงผล (e.g. พี่เข้ม, ปองพล):", key="reg_disp")
+                reg_full = st.text_input("ชื่อ-นามสกุลจริง (e.g. ทนพ.สุทัศน์ บุญยงค์):", key="reg_full")
+                reg_role = st.text_input("ตำแหน่ง / บทบาท (e.g. อนุกรรมการตรวจประเมิน LA...):", key="reg_role")
+                
+                st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+                reg_submitted = st.form_submit_button("📝 ลงทะเบียนสมาชิกใหม่", use_container_width=True, type="primary")
+                if reg_submitted:
+                    username_clean = reg_username.strip().lower()
+                    if not username_clean or not reg_pwd or not reg_disp or not reg_full or not reg_role:
+                        st.error("กรุณากรอกข้อมูลให้ครบทุกช่อง!")
+                    elif not re.match(r"^[a-zA-Z0-9_\-]+$", username_clean):
+                        st.error("ชื่อผู้ใช้งานต้องเป็นตัวอักษรภาษาอังกฤษหรือตัวเลขเท่านั้น!")
+                    elif reg_pwd != reg_pwd_conf:
+                        st.error("รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน!")
                     else:
-                        hashed, salt = hash_password(reg_pwd)
-                        users[username_clean] = {
-                            "username": username_clean,
-                            "password_hash": hashed,
-                            "salt": salt,
-                            "display_name": reg_disp.strip(),
-                            "fullname": reg_full.strip(),
-                            "role": reg_role.strip()
-                        }
-                        if save_users(users):
-                            st.success("สมัครสมาชิกสำเร็จ! กรุณากดไปที่แท็บ 'เข้าสู่ระบบ' เพื่อใช้งาน")
+                        users = load_users()
+                        if username_clean in users:
+                            st.error("ขออภัย! ชื่อผู้ใช้งานนี้ถูกใช้ไปแล้วในระบบ")
                         else:
-                            st.error("เกิดข้อผิดพลาดในการบันทึกบัญชีสมาชิก!")
+                            hashed, salt = hash_password(reg_pwd)
+                            users[username_clean] = {
+                                "username": username_clean,
+                                "password_hash": hashed,
+                                "salt": salt,
+                                "display_name": reg_disp.strip(),
+                                "fullname": reg_full.strip(),
+                                "role": reg_role.strip()
+                            }
+                            if save_users(users):
+                                st.success("สมัครสมาชิกสำเร็จ! กรุณากดไปที่แท็บ 'เข้าสู่ระบบ' เพื่อใช้งาน")
+                            else:
+                                st.error("เกิดข้อผิดพลาดในการบันทึกบัญชีสมาชิก!")
 
 # Page Configuration
 st.set_page_config(
@@ -1109,13 +1113,21 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("🚪 ออกจากระบบ (Logout)", use_container_width=True):
-        st.session_state.logged_in = False
-        st.session_state.user_info = None
-        st.session_state.operator_name = "ผู้ใช้งานทั่วไป"
-        st.rerun()
-        
-    with st.expander("🔑 เปลี่ยนรหัสผ่าน (Change Password)"):
+    with st.expander("⚙️ ตั้งค่าระบบ (System Settings)"):
+        # Theme Mode Selector
+        st.markdown("#### 🎨 ธีมแสดงผล (Theme Mode)")
+        theme_choice = st.selectbox(
+            "เลือกโหมดสีหน้าจอ:",
+            ["🌙 Dark Mode", "☀️ Bright / Light Mode"],
+            index=0 if st.session_state.theme_mode == "🌙 Dark Mode" else 1,
+            key="theme_mode_selectbox"
+        )
+        if theme_choice != st.session_state.theme_mode:
+            st.session_state.theme_mode = theme_choice
+            st.rerun()
+            
+        st.markdown("---")
+        st.markdown("#### 🔑 เปลี่ยนรหัสผ่าน (Change Password)")
         curr_pwd = st.text_input("รหัสผ่านเดิม:", type="password", key="chg_curr_pwd")
         new_pwd = st.text_input("รหัสผ่านใหม่:", type="password", key="chg_new_pwd")
         confirm_pwd = st.text_input("ยืนยันรหัสผ่านใหม่:", type="password", key="chg_conf_pwd")
@@ -1146,8 +1158,9 @@ with st.sidebar:
                         st.error("รหัสผ่านเดิมไม่ถูกต้อง!")
                 else:
                     st.error("ไม่พบบัญชีผู้ใช้งานนี้ในระบบ!")
-    
-    with st.expander("⚙️ ตั้งค่าระบบดึงข้อมูล (System Settings)"):
+                    
+        st.markdown("---")
+        st.markdown("#### ⚙️ การตั้งค่าระบบดึงข้อมูล")
         email = st.text_input("อีเมลดึงจดหมาย (Gmail):", value=cfg.get("email", ""), key="cfg_email")
         password = st.text_input("รหัสผ่านแอป (App Password):", value=cfg.get("password", ""), type="password", help="⚠️ ไม่ใช่รหัสผ่านปกติของเมล! ได้มาจาก:\n1. เปิดระบบยืนยัน 2 ขั้นตอน (2-Step Verification) ในบัญชี Google\n2. เข้าหน้าเว็บ myaccount.google.com/security\n3. ค้นหาคำว่า 'App Passwords' (รหัสผ่านสำหรับแอป)\n4. กดสร้างรหัสผ่านใหม่และคัดลอกรหัสผ่าน 16 ตัวมาระบุในช่องนี้", key="cfg_pwd")
         api_key = st.text_input("Gemini API Key:", value=cfg.get("api_key", ""), type="password", help="ใช้ในการส่งเนื้อความอีเมลและ PDF ไปประมวลผลดึงโครงสร้าง JSON", key="cfg_apikey")
@@ -1177,19 +1190,13 @@ with st.sidebar:
                 st.rerun()
             else:
                 st.error("เกิดข้อผิดพลาดในการเขียนไฟล์ config.json")
-
-    st.markdown("---")
-    # Theme Mode Selector (at very bottom)
-    st.markdown("### 🎨 ธีมแสดงผล (Theme Mode)")
-    theme_choice = st.selectbox(
-        "เลือกโหมดสีหน้าจอ:",
-        ["🌙 Dark Mode", "☀️ Bright / Light Mode"],
-        index=0 if st.session_state.theme_mode == "🌙 Dark Mode" else 1,
-        key="theme_mode_selectbox"
-    )
-    if theme_choice != st.session_state.theme_mode:
-        st.session_state.theme_mode = theme_choice
-        st.rerun()
+                
+        st.markdown("---")
+        if st.button("🚪 ออกจากระบบ (Logout)", use_container_width=True, key="btn_logout_inside"):
+            st.session_state.logged_in = False
+            st.session_state.user_info = None
+            st.session_state.operator_name = "ผู้ใช้งานทั่วไป"
+            st.rerun()
 
     st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
     st.markdown(
