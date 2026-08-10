@@ -427,31 +427,31 @@ st.markdown(f"""
     }}
     
     /* Custom Card Style - Apple Liquid Glass Style (Dark Version) */
-    .glass-card {
-        background: rgba(21, 30, 46, 0.75) !important;
+    .glass-card {{
+        background: {css_card_bg} !important;
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         padding: 16px 20px !important;
         border-radius: 12px !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid {css_card_border} !important;
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
         margin-bottom: 15px;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         overflow: hidden;
-        color: #F3F4F6 !important;
-    }
+        color: {css_text_primary} !important;
+    }}
     
     /* Liquid glass glow on hover */
-    .glass-card:hover {
+    .glass-card:hover {{
         transform: translateY(-3px);
-        box-shadow: 0 16px 24px -8px rgba(99, 102, 241, 0.2), 0 8px 16px -6px rgba(99, 102, 241, 0.1);
-        border-color: rgba(99, 102, 241, 0.3) !important;
-        background: rgba(21, 30, 46, 0.85) !important;
-    }
+        box-shadow: 0 16px 24px -8px rgba(16, 185, 129, 0.2), 0 8px 16px -6px rgba(139, 92, 246, 0.1);
+        border-color: {css_accent_green} !important;
+        background: {css_card_bg} !important;
+    }}
     
     /* Sweep shine effect */
-    .glass-card::before {
+    .glass-card::before {{
         content: '';
         position: absolute;
         top: 0;
@@ -465,24 +465,24 @@ st.markdown(f"""
             transparent
         );
         transition: 0.6s ease-in-out;
-    }
+    }}
     
-    .glass-card:hover::before {
+    .glass-card:hover::before {{
         left: 100%;
-    }
+    }}
     
     /* Streamlit Button Styling - Liquid Glass Apple Style */
     div.stButton > button,
     div.stButton > button[kind="primary"],
-    div.stButton > button[kind="secondary"] {
-        background: linear-gradient(135deg, #151E2E 0%, #1E293B 100%) !important;
-        color: #F3F4F6 !important;
-        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    div.stButton > button[kind="secondary"] {{
+        background: {css_btn_sec_bg} !important;
+        color: {css_text_primary} !important;
+        border: 1px solid {css_widget_border} !important;
         border-radius: 10px !important;
         padding: 8px 16px !important;
         font-weight: 600 !important;
         font-size: 16px !important;
-        min-height: 68px !important;
+        min-height: 56px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -490,37 +490,38 @@ st.markdown(f"""
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         position: relative !important;
         overflow: hidden !important;
-        box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.15) !important;
-    }
+        box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.15) !important;
+    }}
     
-    /* Active Menu Button (Primary) - Indigo gradient and glow shadow */
-    div.stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%) !important; /* Indigo Gradient */
-        border: 1px solid #818CF8 !important;
-        box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.4), 0 0 16px 4px rgba(99, 102, 241, 0.2) !important; /* Indigo glow */
+    /* Active Menu Button (Primary) */
+    div.stButton > button[kind="primary"] {{
+        background: linear-gradient(135deg, {css_accent_green} 0%, {css_accent_purple} 100%) !important;
+        color: #FFFFFF !important;
+        border: 1px solid #10B981 !important;
+        box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.4), 0 0 16px 4px rgba(139, 92, 246, 0.2) !important;
         font-weight: 700 !important;
-    }
+    }}
     
     /* Hover Effects */
-    div.stButton > button:hover {
+    div.stButton > button:hover {{
         transform: translateY(-3px) scale(1.02) !important;
-        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.4) !important;
-        border-color: #6366F1 !important;
-    }
+        box-shadow: 0 12px 28px -4px rgba(16, 185, 129, 0.4) !important;
+        border-color: {css_accent_green} !important;
+    }}
     
-    div.stButton > button[kind="primary"]:hover {
-        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.5), 0 0 20px 6px rgba(99, 102, 241, 0.4) !important;
-        border-color: #818CF8 !important;
-    }
+    div.stButton > button[kind="primary"]:hover {{
+        box-shadow: 0 12px 28px -4px rgba(16, 185, 129, 0.5), 0 0 20px 6px rgba(139, 92, 246, 0.4) !important;
+        border-color: #10B981 !important;
+    }}
     
     /* Click Effect */
-    div.stButton > button:active {
+    div.stButton > button:active {{
         transform: translateY(1px) scale(0.98) !important;
         filter: brightness(0.9) !important;
-    }
+    }}
     
     /* Sweep shine effect on hover */
-    div.stButton > button::before {
+    div.stButton > button::before {{
         content: '' !important;
         position: absolute !important;
         top: 0 !important;
@@ -534,26 +535,26 @@ st.markdown(f"""
             transparent
         ) !important;
         transition: 0.5s !important;
-    }
+    }}
     
-    div.stButton > button:hover::before {
+    div.stButton > button:hover::before {{
         left: 100% !important;
-    }
+    }}
     
-    .accent-border-green {
+    .accent-border-green {{
         border-left: 5px solid #10B981 !important;
-    }
+    }}
     
-    .accent-border-orange {
-        border-left: 5px solid #EF4444 !important; /* Red/Orange Alert */
-    }
+    .accent-border-orange {{
+        border-left: 5px solid #EF4444 !important;
+    }}
     
-    .accent-border-blue {
-        border-left: 5px solid #3B82F6 !important; /* Blue Alert */
-    }
+    .accent-border-blue {{
+        border-left: 5px solid #3B82F6 !important;
+    }}
     
     /* Checklist badge styles */
-    .badge-success {
+    .badge-success {{
         background-color: rgba(16, 185, 129, 0.2) !important;
         color: #34D399 !important;
         padding: 3px 8px;
@@ -561,9 +562,9 @@ st.markdown(f"""
         font-weight: bold;
         font-size: 0.85em;
         border: 1px solid rgba(16, 185, 129, 0.3) !important;
-    }
+    }}
     
-    .badge-warning {
+    .badge-warning {{
         background-color: rgba(245, 158, 11, 0.2) !important;
         color: #FBBF24 !important;
         padding: 3px 8px;
@@ -571,9 +572,9 @@ st.markdown(f"""
         font-weight: bold;
         font-size: 0.85em;
         border: 1px solid rgba(245, 158, 11, 0.3) !important;
-    }
+    }}
     
-    .badge-danger {
+    .badge-danger {{
         background-color: rgba(239, 68, 68, 0.2) !important;
         color: #F87171 !important;
         padding: 3px 8px;
@@ -581,9 +582,9 @@ st.markdown(f"""
         font-weight: bold;
         font-size: 0.85em;
         border: 1px solid rgba(239, 68, 68, 0.3) !important;
-    }
+    }}
     
-    .badge-info {
+    .badge-info {{
         background-color: rgba(59, 130, 246, 0.2) !important;
         color: #60A5FA !important;
         padding: 3px 8px;
@@ -594,10 +595,10 @@ st.markdown(f"""
         margin-left: 0px;
         white-space: nowrap !important;
         display: inline-block !important;
-    }
+    }}
     
     /* Log block style */
-    .log-box {
+    .log-box {{
         background-color: #0F172A;
         color: #38BDF8;
         padding: 10px;
@@ -607,26 +608,26 @@ st.markdown(f"""
         max-height: 200px;
         overflow-y: auto;
         border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+    }}
     
     /* Compact spacing for checkboxes and inputs */
-    div[data-testid="stCheckbox"] {
+    div[data-testid="stCheckbox"] {{
         margin-bottom: -15px !important;
-    }
+    }}
     
     div[data-testid="stTextInput"] input, 
     div[data-testid="stSelectbox"] select, 
-    div[data-testid="stTextArea"] textarea {
-        background-color: #0F172A !important;
-        color: #F3F4F6 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    div[data-testid="stTextArea"] textarea {{
+        background-color: {css_widget_bg} !important;
+        color: {css_text_primary} !important;
+        border: 1px solid {css_widget_border} !important;
         border-radius: 8px !important;
-    }
+    }}
     
     div[data-testid="stTextInput"] > div, 
-    div[data-testid="stSelectbox"] > div {
+    div[data-testid="stSelectbox"] > div {{
         min-height: 32px !important;
-    }
+    }}
     
     /* Lock sidebar open, hide collapse control trigger */
     [data-testid="collapsedControl"],
@@ -634,18 +635,18 @@ st.markdown(f"""
     div[data-testid="collapsedControl"] button,
     [data-testid="stSidebarCollapseButton"],
     button[aria-label="Collapse sidebar"],
-    button[aria-label="Expand sidebar"] {
+    button[aria-label="Expand sidebar"] {{
         display: none !important;
-    }
+    }}
     
     /* Remove padding and shift sidebar content to the very top edge */
-    [data-testid="stSidebarUserContent"] {
+    [data-testid="stSidebarUserContent"] {{
         padding-top: 0px !important;
         margin-top: -55px !important;
-    }
-    div[data-testid="stSidebar"] > div:first-child {
+    }}
+    div[data-testid="stSidebar"] > div:first-child {{
         padding-top: 0px !important;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
