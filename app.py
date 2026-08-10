@@ -1136,38 +1136,39 @@ with st.sidebar:
             st.session_state.theme_mode = theme_choice
             st.rerun()
             
-        st.markdown("---")
-        st.markdown("#### 🔑 เปลี่ยนรหัสผ่าน (Change Password)")
-        curr_pwd = st.text_input("รหัสผ่านเดิม:", type="password", key="chg_curr_pwd")
-        new_pwd = st.text_input("รหัสผ่านใหม่:", type="password", key="chg_new_pwd")
-        confirm_pwd = st.text_input("ยืนยันรหัสผ่านใหม่:", type="password", key="chg_conf_pwd")
-        
-        if st.button("💾 ยืนยันเปลี่ยนรหัสผ่าน", use_container_width=True, key="btn_confirm_chg_pwd"):
-            if not curr_pwd or not new_pwd or not confirm_pwd:
-                st.error("กรุณากรอกข้อมูลให้ครบทุกช่อง!")
-            elif new_pwd != confirm_pwd:
-                st.error("รหัสผ่านใหม่กับยืนยันรหัสผ่านไม่ตรงกัน!")
-            else:
-                users = load_users()
-                u_key = user.get("username", "").strip().lower() if user else ""
-                u_obj = users.get(u_key)
-                if u_obj:
-                    check_hash, _ = hash_password(curr_pwd, u_obj["salt"])
-                    if check_hash == u_obj["password_hash"]:
-                        new_hash, new_salt = hash_password(new_pwd)
-                        u_obj["password_hash"] = new_hash
-                        u_obj["salt"] = new_salt
-                        users[u_key] = u_obj
-                        if save_users(users):
-                            st.session_state.user_info = u_obj
-                            st.success("🎉 เปลี่ยนรหัสผ่านสำเร็จ!")
-                            log_usage(st.session_state.operator_name, f"เปลี่ยนรหัสผ่านของบัญชี {u_key}")
-                        else:
-                            st.error("เกิดข้อผิดพลาดในการบันทึกข้อมูลลง users.json")
-                    else:
-                        st.error("รหัสผ่านเดิมไม่ถูกต้อง!")
+        with st.expander("🔑 เปลี่ยนรหัสผ่าน (Change Password)", expanded=False):
+            curr_pwd = st.text_input("รหัสผ่านเดิม:", type="password", key="chg_curr_pwd")
+            new_pwd = st.text_input("รหัสผ่านใหม่:", type="password", key="chg_new_pwd")
+            confirm_pwd = st.text_input("ยืนยันรหัสผ่านใหม่:", type="password", key="chg_conf_pwd")
+            
+            if st.button("💾 ยืนยันเปลี่ยนรหัสผ่าน", use_container_width=True, key="btn_confirm_chg_pwd"):
+                if not curr_pwd or not new_pwd or not confirm_pwd:
+                    st.error("กรุณากรอกข้อมูลให้ครบทุกช่อง!")
+                elif new_pwd != confirm_pwd:
+                    st.error("รหัสผ่านใหม่กับยืนยันรหัสผ่านไม่ตรงกัน!")
                 else:
-                    st.error("ไม่พบบัญชีผู้ใช้งานนี้ในระบบ!")
+                    users = load_users()
+                    u_key = user.get("username", "").strip().lower() if user else ""
+                    u_obj = users.get(u_key)
+                    if u_obj:
+                        check_hash, _ = hash_password(curr_pwd, u_obj["salt"])
+                        if check_hash == u_obj["password_hash"]:
+                            new_hash, new_salt = hash_password(new_pwd)
+                            u_obj["password_hash"] = new_hash
+                            u_obj["salt"] = new_salt
+                            users[u_key] = u_obj
+                            if save_users(users):
+                                st.session_state.user_info = u_obj
+                                st.success("🎉 เปลี่ยนรหัสผ่านสำเร็จ!")
+                                log_usage(st.session_state.operator_name, f"เปลี่ยนรหัสผ่านของบัญชี {u_key}")
+                                time.sleep(0.5)
+                                st.rerun()
+                            else:
+                                st.error("เกิดข้อผิดพลาดในการบันทึกข้อมูลลง users.json")
+                        else:
+                            st.error("รหัสผ่านเดิมไม่ถูกต้อง!")
+                    else:
+                        st.error("ไม่พบบัญชีผู้ใช้งานนี้ในระบบ!")
                     
         st.markdown("---")
         st.markdown("#### ⚙️ การตั้งค่าระบบดึงข้อมูล")
