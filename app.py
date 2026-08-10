@@ -1210,9 +1210,10 @@ with st.sidebar:
 
     st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
     st.markdown(
-        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 7.5px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; line-height: 1.3; white-space: nowrap !important; background: rgba(0,0,0,0.03); padding: 4px 2px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.12);'>"
-        f"<span style='color: {css_text_primary}; font-weight: 600;'>พัฒนาโดย</span> ทนพ.ปองพล ฤกษ์เนาวรัตน์<br>"
-        f"<span style='color: {css_text_secondary}; font-size: 7px !important;'>นักเทคนิคการแพทย์ชำนาญการ</span>"
+        f"<div style='text-align: center; color: {css_text_secondary}; font-size: 7px !important; font-family: \"Prompt\", \"Sarabun\", sans-serif; font-style: italic !important; line-height: 1.45; background: rgba(0,0,0,0.03); padding: 6px 4px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.12);'>"
+        f"<span style='color: {css_text_secondary}; font-size: 6.5px !important; font-style: italic;'>พัฒนาโดย</span><br>"
+        f"<span style='color: {css_text_primary}; font-size: 7.5px !important; font-weight: 600; font-style: italic; white-space: nowrap !important;'>ทนพ.ปองพล ฤกษ์เนาวรัตน์</span><br>"
+        f"<span style='color: {css_text_secondary}; font-size: 6.5px !important; font-style: italic;'>นักเทคนิคการแพทย์ ชำนาญการ</span>"
         f"</div>",
         unsafe_allow_html=True
     )
