@@ -1111,10 +1111,10 @@ with st.sidebar:
     user_role = user.get("role", "") if user else ""
     
     st.markdown(f"""
-    <div style='padding: 16px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; box-shadow: 0 4px 20px 0 rgba(0,0,0,0.25); text-align: center; margin-bottom: 12px;'>
-        <div style='background: linear-gradient(135deg, #10B981 0%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 24px !important; font-weight: 900; line-height: 1.3;'>Laboratory Accreditation Management System (LAMS)</div>
-        <div style='color: #94A3B8; font-size: 9.5px !important; font-weight: 300 !important; font-style: italic; margin-top: 8px; line-height: 1.4;'>Integrated Quality, Evidence & Assessment Management Platform</div>
+    <div style='padding: 14px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; box-shadow: 0 4px 20px 0 rgba(0,0,0,0.15); text-align: center;'>
+        <div style='background: linear-gradient(135deg, #10B981 0%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 22px !important; font-weight: 900; line-height: 1.3;'>Laboratory Accreditation Management System (LAMS)</div>
     </div>
+    <div style='color: {css_text_secondary}; font-size: 8.5px !important; font-weight: 300 !important; font-style: italic; text-align: center; margin-top: 6px; margin-bottom: 14px; line-height: 1.3;'>Integrated Quality, Evidence & Assessment Management Platform</div>
     
     <div style='padding: 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; text-align: center; margin-bottom: 15px;'>
         <div style='color: #10B981; font-size: 16px !important; font-weight: 700;'>สวัสดี! {disp_name}</div>
